@@ -1,4 +1,4 @@
-#!/bin/bash
+  #!/bin/bash
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
@@ -89,6 +89,9 @@ fi
 echo -e "\nStart streaming from the IRC source connector:"
 ${DIR}/connectors/submit_wikipedia_irc_config.sh
 
+echo -e "\nStart streaming from the twitter source connector:"
+${DIR}/connectors/submit_twitter_source_config.sh
+
 echo -e "\nProvide data mapping to Elasticsearch:"
 ${DIR}/dashboard/set_elasticsearch_mapping_bot.sh
 ${DIR}/dashboard/set_elasticsearch_mapping_count.sh
@@ -135,4 +138,3 @@ curl -X POST -H "Content-Type: application/json" -d '{"name":"Email Administrato
 echo -e "\n\n\n******************************************************************"
 echo -e "DONE! Connect to Confluent Control Center at http://localhost:9021"
 echo -e "******************************************************************\n"
-

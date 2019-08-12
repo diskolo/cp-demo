@@ -100,7 +100,7 @@ services:
       CONFLUENT_METRICS_REPORTER_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required \
         username=\"client\" \
         password=\"client-secret\";"
-      CONFLUENT_METRICS_REPORTER_SASL_MECHANISM: PLAIN      
+      CONFLUENT_METRICS_REPORTER_SASL_MECHANISM: PLAIN
       CONFLUENT_METRICS_REPORTER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.client.truststore.jks
       CONFLUENT_METRICS_REPORTER_SSL_TRUSTSTORE_PASSWORD: confluent
       CONFLUENT_METRICS_REPORTER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.client.keystore.jks
@@ -142,6 +142,7 @@ services:
       - mi3:/usr/share/java/kafka-connect-replicator/
       - $PWD/connect-plugins/kafka-connect-transform-nullfilter/null-filter-4.0.0-SNAPSHOT.jar:/usr/share/java/kafka-connect-elasticsearch/null-filter-4.0.0-SNAPSHOT.jar
       - $PWD/scripts/security:/etc/kafka/secrets
+      - $PWD/security/twitter_crt:/twitter_crt
     environment:
       CONNECT_BOOTSTRAP_SERVERS: "kafka1:9091,kafka2:9092"
       CONNECT_REST_PORT: 8083
@@ -299,7 +300,7 @@ services:
       CONTROL_CENTER_STREAMS_SSL_KEYSTORE_PASSWORD: confluent
       CONTROL_CENTER_STREAMS_SSL_KEY_PASSWORD: confluent
       CONTROL_CENTER_STREAMS_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
-      # HTTP and HTTPS to Control Center UI 
+      # HTTP and HTTPS to Control Center UI
       CONTROL_CENTER_REST_LISTENERS: "http://0.0.0.0:9021,https://0.0.0.0:9022"
       CONTROL_CENTER_REST_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.control-center.truststore.jks
       CONTROL_CENTER_REST_SSL_TRUSTSTORE_PASSWORD: confluent
@@ -373,7 +374,9 @@ services:
                        kafka-topics --zookeeper zookeeper:2181 --topic WIKIPEDIABOT --create --replication-factor 2 --partitions 2 && \
                        kafka-topics --zookeeper zookeeper:2181 --topic WIKIPEDIANOBOT --create --replication-factor 2 --partitions 2 && \
                        kafka-topics --zookeeper zookeeper:2181 --topic EN_WIKIPEDIA_GT_1 --create --replication-factor 2 --partitions 2 && \
-                       kafka-topics --zookeeper zookeeper:2181 --topic EN_WIKIPEDIA_GT_1_COUNTS --create --replication-factor 2 --partitions 2'"
+                       kafka-topics --zookeeper zookeeper:2181 --topic EN_WIKIPEDIA_GT_1_COUNTS --create --replication-factor 2 --partitions 2 && \
+                       kafka-topics --zookeeper zookeeper:2181 --topic connect_twitter_status --create --replication-factor 2 --partitions 2 && \
+                       kafka-topics --zookeeper zookeeper:2181 --topic connect_twitter_delete --create --replication-factor 2 --partitions 2'"
     environment:
       # The following settings are listed here only to satisfy the image's requirements.
       # We override the image's `command` anyways, hence this container will not start a broker.

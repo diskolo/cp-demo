@@ -48,14 +48,19 @@ EOF
 
         # Sign and import the CA cert into the keystore
 	keytool -noprompt -keystore kafka.$i.keystore.jks -alias CARoot -import -file snakeoil-ca-1.crt -storepass confluent -keypass confluent
+	keytool -noprompt -keystore kafka.$i.keystore.jks -alias  CCAroot -import -file twitter_crt/DigiCertSHA2HighAssuranceServerCA.crt -storepass confluent -keypass confluent
+	keytool -noprompt -keystore kafka.$i.keystore.jks -alias  TheCCAroot -import -file twitter_crt/DigiCertSHA2SecureServerCA.crt -storepass confluent -keypass confluent
         #keytool -list -v -keystore kafka.$i.keystore.jks -storepass confluent
-
         # Sign and import the host certificate into the keystore
 	keytool -noprompt -keystore kafka.$i.keystore.jks -alias $i -import -file $i-ca1-signed.crt -storepass confluent -keypass confluent -ext "SAN=dns:$i,dns:localhost"
-        #keytool -list -v -keystore kafka.$i.keystore.jks -storepass confluent
+				# Add twitter certificate to the keystore
+	echo "key tool list for ${i}"
+	keytool -list -v -keystore kafka.$i.keystore.jks -storepass confluent
 
 	# Create truststore and import the CA cert
 	keytool -noprompt -keystore kafka.$i.truststore.jks -alias CARoot -import -file snakeoil-ca-1.crt -storepass confluent -keypass confluent
+	keytool -noprompt -keystore kafka.$i.truststore.jks -alias CCAroot -import -file twitter_crt/DigiCertSHA2HighAssuranceServerCA.crt -storepass confluent -keypass confluent
+	keytool -noprompt -keystore kafka.$i.truststore.jks -alias TheCCAroot -import -file twitter_crt/DigiCertSHA2SecureServerCA.crt -storepass confluent -keypass confluent
 
 	# Save creds
   	echo "confluent" > ${i}_sslkey_creds
@@ -64,7 +69,7 @@ EOF
 
 	# Create pem files and keys used for Schema Registry HTTPS testing
 	#   openssl x509 -noout -modulus -in client.certificate.pem | openssl md5
-	#   openssl rsa -noout -modulus -in client.key | openssl md5 
+	#   openssl rsa -noout -modulus -in client.key | openssl md5
     #   echo "GET /" | openssl s_client -connect localhost:8085/subjects -cert client.certificate.pem -key client.key -tls1
 	keytool -export -alias $i -file $i.der -keystore kafka.$i.keystore.jks -storepass confluent
 	openssl x509 -inform der -in $i.der -out $i.certificate.pem
