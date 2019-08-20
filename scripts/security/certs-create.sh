@@ -8,6 +8,11 @@
 # Cleanup files
 rm -f *.crt *.csr *_creds *.jks *.srl *.key *.pem *.der *.p12
 
+# Download twitter certs
+echo "------------------Twitter certs----------------"
+wget "https://cacerts.digicert.com/DigiCertSHA2HighAssuranceServerCA.crt"
+wget "https://cacerts.digicert.com/DigiCertSHA2SecureServerCA.crt"
+
 # Generate CA key
 openssl req -new -x509 -keyout snakeoil-ca-1.key -out snakeoil-ca-1.crt -days 365 -subj '/CN=ca1.test.confluent.io/OU=TEST/O=CONFLUENT/L=PaloAlto/S=Ca/C=US' -passin pass:confluent -passout pass:confluent
 
@@ -48,19 +53,19 @@ EOF
 
         # Sign and import the CA cert into the keystore
 	keytool -noprompt -keystore kafka.$i.keystore.jks -alias CARoot -import -file snakeoil-ca-1.crt -storepass confluent -keypass confluent
-	keytool -noprompt -keystore kafka.$i.keystore.jks -alias  CCAroot -import -file twitter_crt/DigiCertSHA2HighAssuranceServerCA.crt -storepass confluent -keypass confluent
-	keytool -noprompt -keystore kafka.$i.keystore.jks -alias  TheCCAroot -import -file twitter_crt/DigiCertSHA2SecureServerCA.crt -storepass confluent -keypass confluent
+	# Add twitter certificate to the keystore
+keytool -noprompt -keystore kafka.$i.keystore.jks -alias  CCAroot -import -file DigiCertSHA2HighAssuranceServerCA.crt -storepass confluent -keypass confluent
+keytool -noprompt -keystore kafka.$i.keystore.jks -alias  TheCCAroot -import -file DigiCertSHA2SecureServerCA.crt -storepass confluent -keypass confluent
         #keytool -list -v -keystore kafka.$i.keystore.jks -storepass confluent
         # Sign and import the host certificate into the keystore
 	keytool -noprompt -keystore kafka.$i.keystore.jks -alias $i -import -file $i-ca1-signed.crt -storepass confluent -keypass confluent -ext "SAN=dns:$i,dns:localhost"
-				# Add twitter certificate to the keystore
-	echo "key tool list for ${i}"
-	keytool -list -v -keystore kafka.$i.keystore.jks -storepass confluent
+
+
 
 	# Create truststore and import the CA cert
 	keytool -noprompt -keystore kafka.$i.truststore.jks -alias CARoot -import -file snakeoil-ca-1.crt -storepass confluent -keypass confluent
-	keytool -noprompt -keystore kafka.$i.truststore.jks -alias CCAroot -import -file twitter_crt/DigiCertSHA2HighAssuranceServerCA.crt -storepass confluent -keypass confluent
-	keytool -noprompt -keystore kafka.$i.truststore.jks -alias TheCCAroot -import -file twitter_crt/DigiCertSHA2SecureServerCA.crt -storepass confluent -keypass confluent
+	keytool -noprompt -keystore kafka.$i.truststore.jks -alias CCAroot -import -file DigiCertSHA2HighAssuranceServerCA.crt -storepass confluent -keypass confluent
+	keytool -noprompt -keystore kafka.$i.truststore.jks -alias TheCCAroot -import -file DigiCertSHA2SecureServerCA.crt -storepass confluent -keypass confluent
 
 	# Save creds
   	echo "confluent" > ${i}_sslkey_creds

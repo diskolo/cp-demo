@@ -14,7 +14,10 @@ DATA=$( cat << EOF
     "kafka.delete.topic":"connect_twitter_delete",
     "twitter.oauth.consumerSecret":"ins6jYjCRZbRHFxcFEG8vlFWkTg16JK5YEMxG5HHKnGJkzxjpo",
     "twitter.oauth.accessToken":"831122361390919681-zwp1GSOvGLx0aiNmkbPZnkHRHqzhzCT",
-    "twitter.oauth.consumerKey":"zzpm3ncxQueqZTRdignBa7KLn"
+    "twitter.oauth.consumerKey":"zzpm3ncxQueqZTRdignBa7KLn",
+    "value.converter": "io.confluent.connect.avro.AvroConverter",
+    "value.converter.schema.registry.url": "https://schemaregistry:8085",
+    "value.subject.name.strategy": "io.confluent.kafka.serializers.subject.TopicNameStrategy"
   }
 }
 EOF
